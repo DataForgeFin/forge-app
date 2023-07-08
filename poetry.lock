@@ -328,6 +328,24 @@ diskcache = ["diskcache (>=5.2.1)", "multiprocess (>=0.70.12)", "psutil (>=5.8.0
 testing = ["beautifulsoup4 (>=4.8.2)", "cryptography (<3.4)", "dash-testing-stub (>=0.0.2)", "lxml (>=4.6.2)", "multiprocess (>=0.70.12)", "percy (>=2.0.2)", "psutil (>=5.8.0)", "pytest (>=6.0.2)", "requests[security] (>=2.21.0)", "selenium (>=3.141.0,<=4.2.0)", "waitress (>=1.4.4)"]
 
 [[package]]
+name = "dash-bootstrap-components"
+version = "1.4.1"
+description = "Bootstrap themed components for use in Plotly Dash"
+category = "main"
+optional = false
+python-versions = ">=3.7, <4"
+files = [
+    {file = "dash-bootstrap-components-1.4.1.tar.gz", hash = "sha256:05c2e2767a8ab104fc950d15482d09dde59d21f1e9bd5809d30672e61b7f420c"},
+    {file = "dash_bootstrap_components-1.4.1-py3-none-any.whl", hash = "sha256:17c9e6b90ff27abd3fbd6fe54ea85987b155414a247010467ec904406dcd3657"},
+]
+
+[package.dependencies]
+dash = ">=2.0.0"
+
+[package.extras]
+pandas = ["numpy", "pandas"]
+
+[[package]]
 name = "dash-core-components"
 version = "2.0.0"
 description = "Core component suite for Dash"
@@ -1421,4 +1439,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "526cac7539967bd30852970d945f1d03a47c713f6806b3dd0aecbb35b15ab4ff"
+content-hash = "eb146ffb7be77c7945b2eea1a651d02eb194542aa22c316d85fc2198dc3c0ce7"

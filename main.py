@@ -1,12 +1,13 @@
+import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import Dash, Input, Output, dcc, html
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
 
 
 app.layout = html.Div(
     [
-        html.H4("Stock price analysis"),
+        html.H1("Stock price analysis"),
         dcc.Graph(id="time-series-chart"),
         html.P("Select stock:"),
         dcc.Dropdown(

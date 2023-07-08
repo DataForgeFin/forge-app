@@ -9,6 +9,7 @@ python = ">=3.8.1,<4.0"
 dash = "^2.11.1"
 pandas = "^2.0.3"
 python-dotenv = "^1.0.0"
+dash-bootstrap-components = "^1.4.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.20.0"
