@@ -22,8 +22,8 @@ principal_input = html.Div(
 
 rate_input = html.Div(
     [
-        dbc.Label("Taxa anual"),
-        dbc.Input(id="yearly_rate", value=0.1, type="number"),
+        dbc.Label("Taxa anual (%)"),
+        dbc.Input(id="yearly_rate", value=10, type="number"),
     ],
     className="mb-3",
 )
@@ -85,7 +85,7 @@ def get_month_difference(end_date):
 )
 def display_simulate(_, principal, yearly_rate, date):
     due_in_months = get_month_difference(date)
-    monthly_rate = convert_yearly_to_monthly_rate(yearly_rate)
+    monthly_rate = convert_yearly_to_monthly_rate(yearly_rate / 100)
     ts = financial.calculate_compound_interest(principal, monthly_rate, due_in_months)
     df = pd.DataFrame(ts, columns=["amount"])
     df["month"] = pd.date_range(
