@@ -5,12 +5,6 @@ install:
 	poetry install
 	poetry run pre-commit install
 
-app-dev:
-	uvicorn main:app --reload --port=${PORT}
-
-app:
-	uvicorn main:app --host="0.0.0.0" --port=${PORT} --root-path ${URL_BASE_PATHNAME}
-
 flake8:
 	git ls-files '*.py' | flake8 --count
 
@@ -25,6 +19,6 @@ pytest:
 	# TODO: Enable tests
 	# poetry run pytest --no-cov-on-fail --cov-fail-under=70 --cov-branch --cov-report=term --cov-report=html:htmlcov --cov=src
 
-export-requirements:
+export_requirements:
 	poetry export -f requirements.txt --without-hashes -o requirements/prod.txt
 	poetry export --only dev -f requirements.txt --without-hashes -o requirements/dev.txt
