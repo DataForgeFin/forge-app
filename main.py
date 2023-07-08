@@ -31,6 +31,7 @@ rate_input = html.Div(
 date_input = html.Div(
     [
         dbc.Label("Vencimento"),
+        html.Br(),
         dcc.DatePickerSingle(
             id="date", display_format="Y/MM/DD", date=datetime.now().date() + timedelta(days=365)
         ),
@@ -39,10 +40,11 @@ date_input = html.Div(
 )
 
 investiment_form = dbc.Row(
-    dbc.Col(
-        [principal_input, rate_input, date_input],
-        width=2,
-    )
+    [
+        dbc.Col(principal_input),
+        dbc.Col(rate_input),
+        dbc.Col(date_input),
+    ]
 )
 
 root_layout = [
