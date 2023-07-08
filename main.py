@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.express as px
 from dash import Dash, Input, Output, State, dcc, html
 from dateutil.relativedelta import relativedelta
+from pandas.tseries.offsets import DateOffset
 
 from src import financial
 
@@ -18,7 +19,7 @@ investiment_form = html.Div(
         ),
         dbc.FormFloating(
             [
-                dbc.Input(id="rate", value=0.1, type="number"),
+                dbc.Input(id="yearly_rate", value=0.1, type="number"),
                 dbc.Label("Taxa anual"),
             ]
         ),
@@ -38,6 +39,11 @@ app.layout = html.Div(
 )
 
 
+def convert_yearly_to_monthly_rate(yearly_rate):
+    monthly_rate = (1 + yearly_rate) ** (1 / 12) - 1
+    return monthly_rate
+
+
 def get_month_difference(end_date):
     start_datetime = datetime.now()
     end_datetime = datetime.strptime(end_date, "%Y-%m-%d")
@@ -49,15 +55,18 @@ def get_month_difference(end_date):
     Output("time-series-chart", "figure"),
     Input("simulate_btn", "n_clicks"),
     State("principal", "value"),
-    State("rate", "value"),
+    State("yearly_rate", "value"),
     State("date", "date"),
     prevent_initial_call=True,
 )
-def display_simulate(n_clicks, principal, rate, date):
+def display_simulate(_, principal, yearly_rate, date):
     due_in_months = get_month_difference(date)
-    ts = financial.calculate_compound_interest(principal, rate, due_in_months)
+    monthly_rate = convert_yearly_to_monthly_rate(yearly_rate)
+    ts = financial.calculate_compound_interest(principal, monthly_rate, due_in_months)
     df = pd.DataFrame(ts, columns=["amount"])
-    df["month"] = pd.date_range(pd.Timestamp.now().date(), periods=df.shape[0], freq="MS")
+    df["month"] = pd.date_range(
+        pd.Timestamp.now().date(), periods=due_in_months, freq=DateOffset(months=1)
+    )
     fig = px.line(df, x="month", y="amount")
     return fig
 
