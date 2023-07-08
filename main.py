@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime, timedelta
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -9,33 +9,57 @@ from pandas.tseries.offsets import DateOffset
 
 from src import financial
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
+app = Dash(__name__, external_stylesheets=[dbc.themes.SANDSTONE])
 
 
-investiment_form = html.Div(
+principal_input = html.Div(
     [
-        dbc.FormFloating(
-            [dbc.Input(id="principal", value=1000, type="number"), dbc.Label("Montante inicial")]
-        ),
-        dbc.FormFloating(
-            [
-                dbc.Input(id="yearly_rate", value=0.1, type="number"),
-                dbc.Label("Taxa anual"),
-            ]
-        ),
-        dbc.Label("Vencimento"),
-        dcc.DatePickerSingle(id="date", display_format="Y/MM/DD", date=date(2024, 8, 1)),
-    ]
+        dbc.Label("Montante inicial"),
+        dbc.Input(id="principal", value=1000, type="number"),
+    ],
+    className="mb-3",
 )
 
+rate_input = html.Div(
+    [
+        dbc.Label("Taxa anual"),
+        dbc.Input(id="yearly_rate", value=0.1, type="number"),
+    ],
+    className="mb-3",
+)
+
+date_input = html.Div(
+    [
+        dbc.Label("Vencimento"),
+        dcc.DatePickerSingle(
+            id="date", display_format="Y/MM/DD", date=datetime.now().date() + timedelta(days=365)
+        ),
+    ],
+    className="mb-3",
+)
+
+investiment_form = dbc.Row(
+    dbc.Col(
+        [principal_input, rate_input, date_input],
+        width=2,
+    )
+)
+
+root_layout = [
+    html.H1("Calculadora de investimento"),
+    investiment_form,
+    dbc.Button("Simular", id="simulate_btn", color="primary", className="me-1"),
+    dcc.Graph(id="time-series-chart"),
+]
 
 app.layout = html.Div(
-    [
-        html.H1("Calculadora de investimento"),
-        investiment_form,
-        dbc.Button("Simular", id="simulate_btn", color="primary", className="me-1"),
-        dcc.Graph(id="time-series-chart"),
-    ]
+    dbc.Row(
+        dbc.Col(
+            root_layout,
+            width=10,
+        ),
+        justify="center",
+    )
 )
 
 
