@@ -58,7 +58,7 @@ def display_simulate(n_clicks, principal, rate, date):
     ts = financial.calculate_compound_interest(principal, rate, due_in_months)
     df = pd.DataFrame(ts, columns=["amount"])
     df["month"] = pd.date_range(pd.Timestamp.now().date(), periods=df.shape[0], freq="MS")
-    fig = px.line(df, x="amount", y="month")
+    fig = px.line(df, x="month", y="amount")
     return fig
 
 
