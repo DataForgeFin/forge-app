@@ -81,7 +81,6 @@ def get_month_difference(end_date):
     State("principal", "value"),
     State("yearly_rate", "value"),
     State("date", "date"),
-    prevent_initial_call=True,
 )
 def display_simulate(_, principal, yearly_rate, date):
     due_in_months = get_month_difference(date)
@@ -92,6 +91,11 @@ def display_simulate(_, principal, yearly_rate, date):
         pd.Timestamp.now().date(), periods=due_in_months, freq=DateOffset(months=1)
     )
     fig = px.line(df, x="month", y="amount")
+    fig.update_layout(
+        title="Evolução do investimento",
+        xaxis_title="Período",
+        yaxis_title="Montante",
+    )
     return fig
 
 
