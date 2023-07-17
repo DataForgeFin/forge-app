@@ -11,7 +11,7 @@ def calculate_compound_interest(principal, rate, periods):
         list: A list of values representing the amount after compound interest for each month.
 
     """
-    amounts = []
+    amounts = [principal]
     for _ in range(1, periods + 1):
         principal = principal * (1 + rate)
         amounts.append(principal)
