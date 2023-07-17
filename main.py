@@ -33,7 +33,7 @@ date_input = html.Div(
         dbc.Label("Vencimento"),
         html.Br(),
         dcc.DatePickerSingle(
-            id="date", display_format="Y/MM/DD", date=datetime.now().date() + timedelta(days=365)
+            id="date", display_format="Y/MM/DD", date=datetime.now().date() + relativedelta(years=1, days=1)
         ),
     ],
     className="mb-3",
