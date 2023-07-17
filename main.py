@@ -90,7 +90,7 @@ def display_simulate(_, principal, yearly_rate, date):
     ts = financial.calculate_compound_interest(principal, monthly_rate, due_in_months)
     df = pd.DataFrame(ts, columns=["amount"])
     df["month"] = pd.date_range(
-        pd.Timestamp.now().date(), periods=due_in_months, freq=DateOffset(months=1)
+        pd.Timestamp.now().date(), periods=due_in_months+1, freq=DateOffset(months=1)
     )
     fig = px.line(df, x="month", y="amount")
     fig.update_layout(
