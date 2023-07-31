@@ -7,8 +7,8 @@ from dash import Dash, Input, Output, State, dcc, html
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import DateOffset
 
-from data.selic import get_selic
 from src import financial
+from src.selic import get_selic
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.SANDSTONE])
 
@@ -18,10 +18,10 @@ investiment_type = html.Div(
         dbc.Label("Tipo de investimento"),
         dbc.RadioItems(
             options=[
-                {"label": "Prefixado", "value": 1},
-                {"label": "Tesouro Selic", "value": 2},
+                {"label": "Prefixado", "value": "prefixado"},
+                {"label": "Tesouro Selic", "value": "selic"},
             ],
-            value=1,
+            value="prefixado",
             id="investiment_type",
         ),
     ],
@@ -38,10 +38,12 @@ principal_input = html.Div(
 
 rate_input = html.Div(
     [
-        dbc.Label("Taxa anual (%)"),
-        dbc.Input(id="yearly_rate", value=10, type="number"),
+        dbc.Label("Taxa anual (%)", id="yearly_rate_label"),
+        dbc.Label("SELIC (%)", id="yearly_rate_label1", style={"display": "none"}),
+        dbc.Input(id="yearly_rate", value=10, type="number", readonly="readOnly"),
     ],
     className="mb-3",
+    id="rate_input",
 )
 
 date_input = html.Div(
@@ -71,8 +73,6 @@ root_layout = [
     investiment_form,
     dbc.Button("Simular", id="simulate_btn", color="primary", className="me-1"),
     dcc.Graph(id="time-series-chart"),
-    html.H1("SELIC"),
-    dcc.Graph(id="selic-chart"),
 ]
 
 app.layout = html.Div(
@@ -107,14 +107,13 @@ def get_month_difference(end_date):
     State("date", "date"),
 )
 def display_simulate(_, investiment_type, principal, yearly_rate, date):
+    current_time = datetime.now()
     due_in_months = get_month_difference(date)
 
-    if investiment_type == 1:
+    if investiment_type == "prefixado":
         monthly_rate = convert_yearly_to_monthly_rate(yearly_rate / 100)
     else:
-        expected_selic = pd.DataFrame(get_selic(datetime.now() - relativedelta(months=1)))[
-            "value"
-        ].values[-1]
+        expected_selic = get_selic(current_time - relativedelta(months=1))[-1]["value"]
         monthly_rate = convert_yearly_to_monthly_rate(expected_selic / 100)
 
     ts = financial.calculate_compound_interest(principal, monthly_rate, due_in_months)
@@ -122,6 +121,7 @@ def display_simulate(_, investiment_type, principal, yearly_rate, date):
     df["month"] = pd.date_range(
         pd.Timestamp.now().date(), periods=due_in_months + 1, freq=DateOffset(months=1)
     )
+    df["amount"] = df["amount"].apply(lambda x: round(x, 2))
     fig = px.line(df, x="month", y="amount")
     fig.update_layout(
         title="Evolução do investimento",
@@ -132,18 +132,18 @@ def display_simulate(_, investiment_type, principal, yearly_rate, date):
 
 
 @app.callback(
-    Output("selic-chart", "figure"),
-    Input("simulate_btn", "n_clicks"),
+    Output(component_id="yearly_rate", component_property="readonly"),
+    Output(component_id="yearly_rate", component_property="value"),
+    Output(component_id="yearly_rate_label", component_property="style"),
+    Output(component_id="yearly_rate_label1", component_property="style"),
+    Input(component_id="investiment_type", component_property="value"),
 )
-def display_selic(_):
-    df = get_selic(datetime(year=2023, month=1, day=1))
-    fig = px.line(df, x="date", y="value")
-    fig.update_layout(
-        title="SELIC",
-        xaxis_title="Período",
-        yaxis_title="Valor",
-    )
-    return fig
+def toggle_non_editable_rate_input(investiment_type):
+    selic_value = get_selic(datetime.now() - relativedelta(months=1))[-1]["value"]
+    if investiment_type == "selic":
+        return "readOnly", selic_value, {"display": "none"}, {"display": "block"}
+    else:
+        return None, 0, {"display": "block"}, {"display": "none"}
 
 
 app.run_server(debug=True)
