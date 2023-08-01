@@ -39,7 +39,6 @@ principal_input = html.Div(
 rate_input = html.Div(
     [
         dbc.Label("Taxa anual (%)", id="yearly_rate_label"),
-        dbc.Label("SELIC (%)", id="yearly_rate_label1", style={"display": "none"}),
         dbc.Input(id="yearly_rate", value=10, type="number", readonly="readOnly"),
     ],
     className="mb-3",
@@ -132,18 +131,16 @@ def display_simulate(_, investiment_type, principal, yearly_rate, date):
 
 
 @app.callback(
-    Output(component_id="yearly_rate", component_property="readonly"),
+    Output(component_id="yearly_rate_label", component_property="children"),
     Output(component_id="yearly_rate", component_property="value"),
-    Output(component_id="yearly_rate_label", component_property="style"),
-    Output(component_id="yearly_rate_label1", component_property="style"),
     Input(component_id="investiment_type", component_property="value"),
 )
 def toggle_non_editable_rate_input(investiment_type):
     selic_value = get_selic(datetime.now() - relativedelta(months=1))[-1]["value"]
     if investiment_type == "selic":
-        return "readOnly", selic_value, {"display": "none"}, {"display": "block"}
+        return "SELIC", selic_value
     else:
-        return None, 0, {"display": "block"}, {"display": "none"}
+        return "Taxa anual (%)", 10
 
 
 app.run_server(debug=True)
